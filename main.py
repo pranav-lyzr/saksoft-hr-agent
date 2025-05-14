@@ -55,20 +55,17 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Security(secu
 async def chat_with_agent(request: ChatRequest, token: str = Depends(verify_token)):
     logger.info(f"Received chat request with session_id: {request.session_id}, message: {request.message}")
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=120.0) as client:
             headers = {
                 "Content-Type": "application/json",
                 "x-api-key": os.getenv("API_KEY")
             }
             
             payload = {
-                "user_id": os.getenv("USER_ID", "default_user"),
-                "agent_id": os.getenv("AGENT_ID", ""),
+                "user_id": os.getenv("USER_ID"),
+                "agent_id": os.getenv("AGENT_ID"),
                 "session_id": request.session_id,
                 "message": request.message,
-                "system_prompt_variables": {},
-                "filter_variables": {},
-                "features": []
             }
             
             logger.debug(f"Sending request to {os.getenv('AGENT_API_URL')} with payload: {payload}")
