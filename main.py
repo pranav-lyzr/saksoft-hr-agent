@@ -51,7 +51,7 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Security(secu
     logger.debug("Bearer token verified successfully")
     return credentials.credentials
 
-@app.post("/chat")
+@app.post("/chat", tags=["HR Agent"])
 async def chat_with_agent(request: ChatRequest, token: str = Depends(verify_token)):
     logger.info(f"Received chat request with session_id: {request.session_id}, message: {request.message}")
     try:
@@ -110,7 +110,7 @@ async def stream_response(client: httpx.AsyncClient, url: str, headers: Dict[str
                     logger.error(f"Invalid JSON in streamed chunk: {line}")
                     continue
 
-# @app.post("/stream")
+# @app.post("/stream", , tags=["HR Agent"])
 # async def stream_with_agent(request: StreamRequest, token: str = Depends(verify_token)):
 #     logger.info(f"Received stream request with session_id: {request.session_id}, message: {request.message}")
 #     try:
@@ -148,3 +148,9 @@ async def stream_response(client: httpx.AsyncClient, url: str, headers: Dict[str
 #         logger.error(f"Unexpected error occurred: {str(e)}")
 #         logger.debug(f"Traceback: {traceback.format_exc()}")
 #         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Health Check
+@app.get("/health", tags=["System"])
+def health_check():
+    return {"status": "healthy"}
